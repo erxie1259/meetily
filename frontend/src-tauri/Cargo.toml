@@ -75,6 +75,9 @@ cpal = "0.15.3"
 # Wav encoding - now using manual WAV creation instead of hound
 # hound = "3.5"
 
+# Base64 encoding (FluidVoice API transport)
+base64 = "0.22"
+
 # Cli ! shouldn't be required if using as lib
 clap = { version = "4.3", features = ["derive"] }
 

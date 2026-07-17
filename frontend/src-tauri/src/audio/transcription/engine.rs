@@ -135,6 +135,29 @@ pub async fn validate_transcription_model_ready<R: Runtime>(app: &AppHandle<R>) 
                 }
             }
         }
+        "fluidvoice" => {
+            info!("🔍 Validating FluidVoice STT connection...");
+            // FluidVoice is an external API — just verify it's reachable
+            let client = reqwest::Client::new();
+            match client
+                .get("http://127.0.0.1:9876/v1/transcribe")
+                .send()
+                .await
+            {
+                Ok(_) => {
+                    info!("✅ FluidVoice API is reachable");
+                    Ok(())
+                }
+                Err(e) => {
+                    warn!("❌ FluidVoice API not reachable: {}", e);
+                    Err(format!(
+                        "FluidVoice is not running or its local API is not enabled. \
+                         Enable it with: defaults write com.FluidApp.app LocalAPIEnabled -bool true \
+                         && defaults write com.FluidApp.app APIPort -int 9876 && restart FluidVoice"
+                    ))
+                }
+            }
+        }
         other => {
             warn!("❌ Unsupported transcription provider for local recording: {}", other);
             Err(format!(
@@ -211,6 +234,13 @@ pub async fn get_or_init_transcription_engine<R: Runtime>(
                     Err("Parakeet engine not initialized. This should not happen after validation.".to_string())
                 }
             }
+        }
+        "fluidvoice" => {
+            info!("🎙️ Initializing FluidVoice transcription provider");
+            let provider = crate::audio::transcription::FluidVoiceProvider::new(
+                crate::config::FLUIDVOICE_API_URL.to_string(),
+            );
+            Ok(TranscriptionEngine::Provider(Arc::new(provider)))
         }
         "localWhisper" | _ => {
             info!("🎤 Initializing Whisper transcription engine");

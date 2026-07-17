@@ -11,6 +11,9 @@ pub const DEFAULT_WHISPER_MODEL: &str = "large-v3-turbo";
 /// This is the quantized version optimized for speed.
 pub const DEFAULT_PARAKEET_MODEL: &str = "parakeet-tdt-0.6b-v3-int8";
 
+/// FluidVoice local STT API endpoint (parakeet-tdt-v2 via CoreML on macOS)
+pub const FLUIDVOICE_API_URL: &str = "http://127.0.0.1:9876/v1/transcribe";
+
 /// Whisper model catalog with metadata for all supported models.
 /// Used by both WhisperEngine::discover_models() and discover_models_standalone().
 ///
